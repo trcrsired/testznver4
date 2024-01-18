@@ -1,7 +1,7 @@
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/Support/InitLLVM.h"
-#include "llvm/TargetParser/Host.h"
 #include "llvm/Support/TargetSelect.h"
+#include "llvm/TargetParser/Host.h"
 
 #include <string>
 
@@ -26,9 +26,21 @@ int main(int argc, char *argv[]) {
   std::string errormessage;
   engineBuilder.setErrorStr(&errormessage);
   std::unique_ptr<llvm::TargetMachine> targetMachine(
-    engineBuilder.selectTarget(triple, "", hostcpu, targetAttributes));
-  outs() << "targetMachine = " << (void*)targetMachine.get() <<"\n"
-  	"hosttriple: " << hosttriple <<"\n"
-	  "hostcpu:"<< hostcpu << "\n"
-	  "hostcpu==\"znver4\"?" << (hostcpu=="znver4") << '\n' ;
+      engineBuilder.selectTarget(triple, "", hostcpu, targetAttributes));
+  if (!targetMachine) {
+    errormessage.clear();
+  }
+  outs() << "targetMachine = " << (void *)targetMachine.get()
+         << "\n"
+            "hosttriple: "
+         << hosttriple
+         << "\n"
+            "hostcpu:"
+         << hostcpu
+         << "\n"
+            "hostcpu==\"znver4\"?"
+         << (hostcpu == "znver4") << '\n';
+  if (!targetMachine) {
+    outs() << "errormessage:" << errormessage << '\n';
+  }
 }
